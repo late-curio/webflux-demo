@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping
@@ -22,5 +24,15 @@ class PersonController {
     @GetMapping("/people/{ids}")
     ResponseEntity<List<Person>> findAllPeopleByIds(@PathVariable List<String> ids) {
         ResponseEntity.ok(personService.findAllPeopleByIds(ids))
+    }
+
+    @GetMapping("/reactive/person/{id}")
+    Mono<Person> getPersonByIdReactive(@PathVariable String id) {
+        personService.findPersonByIdReactive(id)
+    }
+
+    @GetMapping("/reactive/people/{ids}")
+    Flux<Person> findAllPeopleByIdsReactive(@PathVariable List<String> ids) {
+        personService.findAllPeopleByIdsReactive(ids)
     }
 }

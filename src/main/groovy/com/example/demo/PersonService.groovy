@@ -1,59 +1,46 @@
 package com.example.demo
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-import java.time.LocalDate
-import java.util.concurrent.CompletableFuture
-
 @Service
 class PersonService {
-    Map<String, Person> repo = [
-            "fbodba1": new Person(
-                    name: "Florence",
-                    birthDate: LocalDate.of(2000, 1, 1),
-                    email: "florence_bodba@optum.com"
-            ),
-            "cmartin1": new Person(
-                    name: "Charlie",
-                    birthDate: LocalDate.of(2000, 1, 1),
-                    email: "charlie_martin@optum.com"
-            ),
-            "kfletcher1": new Person(
-                    name: "Kent",
-                    birthDate: LocalDate.of(2000, 1, 1),
-                    email: "kent_fletcher@optum.com"
-            ),
-            "tcrone1": new Person(
-                    name: "Todd",
-                    birthDate: LocalDate.of(1970, 10, 10),
-                    email: "todd_crone@optum.com"
-            ),
-            "tarek1": new Person(
-                    name: "Tarek",
-                    birthDate: LocalDate.of(2000, 1, 1),
-                    email: "ahmed.elshamekh@optum.com"
-            )
-    ]
+
+    @Autowired
+    ObjectMapper objectMapper
 
     List<Person> findAllPeopleByIds(List<String> ids) {
-        ids.collect {findPersonById(it) }
+        String json = new URL("http://localhost:8080/db/people/${ids.join(',')}").text
+        objectMapper.readValue(json, Person[].class)
     }
 
     Person findPersonById(String id) {
-        sleep(1000)
-        repo[id]
+        String json = new URL("http://localhost:8080/db/person/${id}").text
+        objectMapper.readValue(json, Person.class)
     }
 
     Flux<Person> findAllPeopleByIdsReactive(List<String> ids) {
         Flux.fromIterable(ids)
-        .map{findPersonById(it) }
+        .flatMap { getPersonReactive(it) }
     }
 
     Mono<Person> findPersonByIdReactive(String id) {
-        CompletableFuture<Person> completableFuture = new CompletableFuture<>()
-        completableFuture.complete(findPersonById(id))
-        Mono.fromFuture(completableFuture)
+        getPersonReactive(id)
+    }
+
+    private Mono<Person> getPersonReactive(String id) {
+        WebClient.builder()
+                .baseUrl("http://localhost:8080/person/${id}")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build()
+                .get()
+                .retrieve()
+                .bodyToMono(Person)
     }
 }
