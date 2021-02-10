@@ -1,6 +1,6 @@
 package com.example.demo
 
-
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 import java.time.LocalDate
+import java.util.concurrent.atomic.AtomicInteger
 
 @RestController
 @RequestMapping
@@ -41,22 +42,25 @@ class PersonDb {
             )
     ]
 
+    private AtomicInteger hits = new AtomicInteger(0)
+
     @GetMapping("/db/person/{id}")
     ResponseEntity<Person> getPersonById(@PathVariable String id) {
-        ResponseEntity.ok(findPersonById(id))
+        if(hits.incrementAndGet() % 20 == 0) {
+            new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+        else {
+            ResponseEntity.ok(findPersonById(id))
+        }
     }
 
-    @GetMapping("/db/people/{ids}")
-    ResponseEntity<List<Person>> getAllPeopleByIds(@PathVariable List<String> ids) {
-        ResponseEntity.ok(findAllPeopleByIds(ids))
-    }
-
-    List<Person> findAllPeopleByIds(List<String> ids) {
-        ids.collect {findPersonById(it) }
+    @GetMapping("/db/count")
+    ResponseEntity<Integer> cout() {
+        ResponseEntity.ok(hits.get())
     }
 
     Person findPersonById(String id) {
-        sleep(1000)
+        sleep(500)
         REPO[id]
     }
 }

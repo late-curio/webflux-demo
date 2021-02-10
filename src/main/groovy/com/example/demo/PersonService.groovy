@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.util.retry.Retry
+
+import java.time.Duration
+import java.time.temporal.Temporal
 
 @Service
 class PersonService {
@@ -16,8 +20,7 @@ class PersonService {
     ObjectMapper objectMapper
 
     List<Person> findAllPeopleByIds(List<String> ids) {
-        String json = new URL("http://localhost:8080/db/people/${ids.join(',')}").text
-        objectMapper.readValue(json, Person[].class)
+        ids.collect {findPersonById(it)}
     }
 
     Person findPersonById(String id) {
@@ -42,5 +45,7 @@ class PersonService {
                 .get()
                 .retrieve()
                 .bodyToMono(Person)
+                .retryWhen(Retry.max(1))
+                .timeout(Duration.ofSeconds(1000))
     }
 }
