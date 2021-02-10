@@ -50,7 +50,8 @@ class PersonDb {
             new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
         else {
-            ResponseEntity.ok(findPersonById(id))
+            Person person = findPersonById(id)
+            person ? ResponseEntity.ok(person) : new ResponseEntity(HttpStatus.NOT_FOUND)
         }
     }
 

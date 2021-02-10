@@ -1,9 +1,11 @@
 package com.example.demo
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.codehaus.groovy.util.StringUtil
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -35,6 +37,7 @@ class PersonService {
     Flux<Person> findAllPeopleByIdsReactive(List<String> ids) {
         Flux.fromIterable(ids)
         .flatMap { getPersonReactive(it) }
+
     }
 
     Mono<Person> findPersonByIdReactive(String id) {
