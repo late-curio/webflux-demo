@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
+import java.time.Duration
+
 @Service
 class PersonService {
 
@@ -44,5 +46,6 @@ class PersonService {
                 .uri("/${id}")
                 .retrieve()
                 .bodyToMono(Person)
+                .retry(1)
     }
 }
