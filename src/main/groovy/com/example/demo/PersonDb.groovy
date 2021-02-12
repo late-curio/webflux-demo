@@ -18,27 +18,27 @@ class PersonDb {
             "fbodba1": new Person(
                     name: "Florence",
                     birthDate: LocalDate.of(2000, 1, 1),
-                    email: "florence_bodba@optum.com"
+                    email: "florence@abc.com"
             ),
             "cmartin1": new Person(
                     name: "Charlie",
                     birthDate: LocalDate.of(2000, 1, 1),
-                    email: "charlie_martin@optum.com"
+                    email: "charlie@xyz.com"
             ),
             "kfletcher1": new Person(
                     name: "Kent",
                     birthDate: LocalDate.of(2000, 1, 1),
-                    email: "kent_fletcher@optum.com"
+                    email: "kent@some.com"
             ),
             "tcrone1": new Person(
                     name: "Todd",
                     birthDate: LocalDate.of(1970, 10, 10),
-                    email: "todd_crone@optum.com"
+                    email: "todd@twcrone.com"
             ),
             "tarek1": new Person(
                     name: "Tarek",
                     birthDate: LocalDate.of(2000, 1, 1),
-                    email: "ahmed.elshamekh@optum.com"
+                    email: "tarek@mnu.edu"
             )
     ]
 
